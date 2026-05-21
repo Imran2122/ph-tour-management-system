@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-console */
+
+
 import { Server } from "node:http";
 import mongoose from "mongoose";
-import { webcrypto } from "crypto";
-(globalThis as any).crypto = webcrypto;
+
 import app from "./app";
 import { envVars } from "./app/config/env";
 
@@ -80,3 +79,6 @@ process.on("SIGINT", () => {
 // Promise.reject(new Error("i forget to catch this Promise"))
 
 //throw new Error("I Forget To handle the local error")
+
+
+
