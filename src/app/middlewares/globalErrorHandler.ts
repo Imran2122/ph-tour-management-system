@@ -18,7 +18,7 @@ export const globalErrorHandler = (
     statusCode = err.statusCode;
     message = err.message;
   } else if (err instanceof Error) {
-    statusCode = 5000;
+    statusCode = 401;
     message = err.message;
   }
 

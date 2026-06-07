@@ -5,10 +5,24 @@ interface EnvConfig {
   PORT: string;
   DB_URL: string;
   NODE_ENV: "development" | "production";
+  JWT_ACCESS_SECRET: string;
+  JWT_ACCESS_EXPIRES: string;
+  BCRYPT_SALT_ROUND: string;
+  SUPPER_ADMIN_PASSWORD: string;
+  SUPPER_ADMIN_EMAIL: string;
 }
 
 const loadEnvVariable = (): EnvConfig => {
-  const requiredEnvVariable: string[] = ["PORT", "DB_URL", "NODE_ENV"];
+  const requiredEnvVariable: string[] = [
+    "PORT",
+    "DB_URL",
+    "NODE_ENV",
+    "BCRYPT_SALT_ROUND",
+    "JWT_ACCESS_EXPIRES",
+    "JWT_ACCESS_SECRET",
+    "SUPPER_ADMIN_PASSWORD",
+    "SUPPER_ADMIN_EMAIL",
+  ];
 
   requiredEnvVariable.forEach((key) => {
     if (!process.env[key]) {
@@ -19,6 +33,11 @@ const loadEnvVariable = (): EnvConfig => {
     PORT: process.env.PORT as string,
     DB_URL: process.env.DB_URL as string,
     NODE_ENV: process.env.NODE_ENV as "development" | "production",
+    BCRYPT_SALT_ROUND: process.env.BCRYPT_SALT_ROUND as string,
+    JWT_ACCESS_EXPIRES: process.env.JWT_ACCESS_EXPIRES as string,
+    JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET as string,
+    SUPPER_ADMIN_EMAIL: process.env.SUPPER_ADMIN_EMAIL as string,
+    SUPPER_ADMIN_PASSWORD: process.env.SUPPER_ADMIN_PASSWORD as string,
   };
 };
 
