@@ -7,19 +7,20 @@ export enum Role {
   GUIDE = "GUIDE",
 }
 export enum IsActive {
-    ACTIVE = "ACTIVE",
-    INACTIVE = "INACTIVE",
-    BLOCKED = "BLOCKED"
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+  BLOCKED = "BLOCKED",
 }
 
 export interface IAuthProvider {
-  provider: string; //google
+  provider: "google" | "credential"; //google
   providerId: string;
 }
 
 // fixed constant value এর group create
 
 export interface IUser {
+  _id?:Types.ObjectId;
   name: string;
   email: string;
   password?: string;
@@ -28,7 +29,7 @@ export interface IUser {
   address?: string;
   isDeleted?: string;
   isActive?: IsActive;
-  isVerified?: string;
+  isVerified?: boolean;
   role: Role;
   auths: IAuthProvider[];
   bookings?: Types.ObjectId[];
