@@ -20,6 +20,7 @@ export interface IAuthProvider {
 // fixed constant value এর group create
 
 export interface IUser {
+  _id?:Types.ObjectId;
   name: string;
   email: string;
   password?: string;

@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import AppError from "../../errorHelper/AppError";
-import { IAuthProvider, IsActive, IUser, Role } from "./user.interface";
+import { IAuthProvider,  IUser, Role } from "./user.interface";
 import { User } from "./user.model";
 import bcryptjs from "bcryptjs";
 import { envVars } from "../../config/env";

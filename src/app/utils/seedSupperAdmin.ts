@@ -38,5 +38,6 @@ export const seedSupperAdmin = async () => {
     console.log(supperAdmin);
   } catch (error) {
     //
+    console.log(error)
   }
 };
