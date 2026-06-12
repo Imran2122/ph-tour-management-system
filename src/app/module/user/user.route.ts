@@ -1,4 +1,4 @@
-import { AuthControllers } from "./../auth/auth.controller";
+
 import { Router } from "express";
 import { userController } from "./user.controller";
 
@@ -22,8 +22,9 @@ router.get(
   userController.getAllUsers,
 );
 router.patch(
-  "/:id",validateRequest(updateUserZodSchema),
+  "/:id",
   checkAuth(...Object.values(Role)),
+  validateRequest(updateUserZodSchema),
   userController.updateUser,
 );
 

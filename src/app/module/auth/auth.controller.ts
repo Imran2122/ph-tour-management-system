@@ -9,19 +9,44 @@ import { setAuthCookies } from "../../utils/setCookies";
 import { createUserToken } from "../../utils/userToken";
 import { envVars } from "../../config/env";
 import { JwtPayload } from "jsonwebtoken";
+import passport from "passport";
 const credentialsLogin = catchAsync(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async (req: Request, res: Response, next: NextFunction) => {
-    const loginInfo = await AuthServices.credentialsLogin(req.body);
+    passport.authenticate("local", async (err: any, user: any, info: any) => {
+      if (err) {
+         return next(new AppError(401, err))
+      }
 
-    setAuthCookies(res, loginInfo);
+      if (!user) {
+          return next(new AppError(401, info.message))
+      }
 
-    sendResponse(res, {
-      success: true,
-      statusCode: httpStatus.CREATED,
-      message: "user Login  Successfully",
-      data: loginInfo,
-    });
+      const userToken = createUserToken(user);
+      const { password:pass, ...rest } = user.toObject();
+
+      setAuthCookies(res, userToken);
+      sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.CREATED,
+        message: "user Login  Successfully",
+        data: {
+          accessToken: userToken.accessToken,
+          refreshToken: userToken.refreshToken,
+          user: rest,
+        },
+      });
+    })(req, res, next);
+    // const loginInfo = await AuthServices.credentialsLogin(req.body);
+
+    // setAuthCookies(res, loginInfo);
+
+    // sendResponse(res, {
+    //   success: true,
+    //   statusCode: httpStatus.CREATED,
+    //   message: "user Login  Successfully",
+    //   data: loginInfo,
+    // });
   },
 );
 
