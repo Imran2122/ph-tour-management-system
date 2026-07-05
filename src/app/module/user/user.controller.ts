@@ -19,6 +19,19 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// get me
+const getMe = catchAsync(async (req: Request, res: Response) => {
+  const decodedToken=req.user as JwtPayload
+  const user = await UserServices.getMe(decodedToken.useId);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "Get my Profile",
+    data: user,
+  });
+});
+
 // update user
 const updateUser = catchAsync(async (req: Request, res: Response) => {
   const userId = req.params.id;
@@ -47,11 +60,25 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
     meta: result.meta,
   });
 });
+const getSingleUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.id;
+    const result = await UserServices.getSingleUser(id);
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.CREATED,
+        message: "User Retrieved Successfully",
+        data: result.data
+    })
+})
+
+
 
 export const userController = {
   createUser,
   getAllUsers,
   updateUser,
+  getSingleUser,
+  getMe
 };
 // controller ar kaj only req response
 

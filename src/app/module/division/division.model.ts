@@ -26,7 +26,7 @@ divisionSchema.pre("save", async function () {
  
 })
 
-divisionSchema.pre("findOneAndUpdate", async function (next) {
+divisionSchema.pre("findOneAndUpdate", async function () {
     const division = this.getUpdate() as Partial<IDivision>
 
     if (division.name) {
@@ -43,7 +43,7 @@ divisionSchema.pre("findOneAndUpdate", async function (next) {
 
     this.setUpdate(division)
 
-    next()
+  
 })
 
 export const Division = model<IDivision>("Division", divisionSchema)

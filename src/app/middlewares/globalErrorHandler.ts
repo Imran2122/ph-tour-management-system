@@ -12,9 +12,10 @@ import { handleDuplicateError } from "../helper/handleDuplicateError";
 import { handleCastError } from "../helper/handleCastError";
 import { handleZodError } from "../helper/handleZodError";
 import { handleValidationError } from "../helper/handleValidationError";
+import { deleteImageFromCLoudinary } from "../config/cloudinary.config";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const globalErrorHandler = (
+export const globalErrorHandler = async (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   err: any,
   req: Request,
@@ -24,6 +25,21 @@ export const globalErrorHandler = (
   if (envVars.NODE_ENV === "development") {
     console.log(err);
   }
+
+  // single file
+  if (req.file) {
+    await deleteImageFromCLoudinary(req.file.path);
+  }
+
+  // multiple files
+
+  if (req.files && Array.isArray(req.files) && req.files.length) {
+    const imageUrls = (req.files as Express.Multer.File[]).map(
+      (file) => file.path,
+    );
+    await Promise.all(imageUrls.map((url) => deleteImageFromCLoudinary(url)));
+  }
+
   let errorSources: TErrorSources[] = [];
   let statusCode = 500;
   let message = `Something wrong !! ${err.message} from global error`;

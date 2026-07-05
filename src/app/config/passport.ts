@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import passport from "passport";
 import {
@@ -7,9 +9,11 @@ import {
 } from "passport-google-oauth20";
 import { envVars } from "./env";
 import { User } from "../module/user/user.model";
-import { Role } from "../module/user/user.interface";
+import { IsActive, Role } from "../module/user/user.interface";
 import { Strategy as localStrategy } from "passport-local";
 import bcryptjs from "bcryptjs";
+import AppError from "../errorHelper/AppError";
+import { StatusCodes } from "http-status-codes";
 
 passport.use(
   new localStrategy(
@@ -26,12 +30,29 @@ passport.use(
             message: "user does not exist",
           });
         }
-        // if (!isUserExist) {
-        //   return done("User does not exist");
-        // }
+
+        if (
+          isUserExist.isActive === IsActive.BLOCKED ||
+          isUserExist.isActive === IsActive.INACTIVE
+        ) {
+          // throw new AppError(
+          //   StatusCodes.BAD_REQUEST,
+          //   `User is ${isUserExist.isActive}`,
+          // );
+          return done(`user is ${isUserExist.isActive}`);
+        }
+        if (isUserExist.isDeleted) {
+          // throw new AppError(StatusCodes.BAD_REQUEST, "user already isDeleted");
+          return done("user already isDeleted");
+        }
+
+        if (!isUserExist.isVerified) {
+          // throw new AppError(StatusCodes.BAD_REQUEST, "user is not Verified");
+          return done("user is not Verified");
+        }
 
         const isGoogleAuthenticate = isUserExist.auths.some(
-          (providerObjects) => (providerObjects.provider == "google"),
+          (providerObjects) => providerObjects.provider == "google",
         );
 
         if (isGoogleAuthenticate) {
@@ -77,9 +98,30 @@ passport.use(
           return done(null, false, { message: "No Email Found" });
         }
 
-        let user = await User.findOne({ email });
-        if (!user) {
-          user = await User.create({
+        // user
+        let isUserExist = await User.findOne({ email });
+        if (isUserExist && !isUserExist.isVerified) {
+          // throw new AppError(httpStatus.BAD_REQUEST, "User is not verified")
+          // done("User is not verified")
+          return done(null, false, { message: "User is not verified" });
+        }
+
+        if (
+          isUserExist &&
+          (isUserExist.isActive === IsActive.BLOCKED ||
+            isUserExist.isActive === IsActive.INACTIVE)
+        ) {
+          // throw new AppError(httpStatus.BAD_REQUEST, `User is ${isUserExist.isActive}`)
+          done(`User is ${isUserExist.isActive}`);
+        }
+
+        if (isUserExist && isUserExist.isDeleted) {
+          return done(null, false, { message: "User is deleted" });
+          // done("User is deleted")
+        }
+
+        if (!isUserExist) {
+          isUserExist = await User.create({
             email,
             name: profile.displayName,
             picture: profile.photos?.[0].value,
@@ -94,7 +136,7 @@ passport.use(
           });
         }
 
-        return done(null, user);
+        return done(null, isUserExist);
       } catch (error) {
         //
         console.log("google error", error);

@@ -10,10 +10,9 @@ import { PAYMENT_STATUS } from "../payment/payment.interface";
 import { ISSLCommerz } from "../sslCommerz/sslCommerz.interface";
 import { SSLService } from "../sslCommerz/sslCommerz.service";
 import { populate } from "dotenv";
+import { getTransactionId } from "../../utils/getTransactionid";
 
-const getTransactionId = () => {
-  return `tran_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-};
+
 
 /**
  * Duplicate DB Collections / replica

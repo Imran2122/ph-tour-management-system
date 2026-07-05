@@ -3,35 +3,41 @@ import { AuthControllers } from "./auth.controller";
 import { checkAuth } from "../../middlewares/checkAuth";
 import { Role } from "../user/user.interface";
 import passport from "passport";
+import { envVars } from "../../config/env";
 
 const router = Router();
 router.post("/login", AuthControllers.credentialsLogin);
 router.post("/refresh-token", AuthControllers.getNewAccessToken);
 router.post("/logout", AuthControllers.logout);
+router.post("/forgot-password", AuthControllers.forgotPassword);
 router.post(
   "/reset-password",
   checkAuth(...Object.values(Role)),
   AuthControllers.resetPassword,
 );
-// router.get(
-//   "/google",
-//   async (req: Request, res: Response, next: NextFunction) => {
-//     const redirect = req.query.redirect || "/";
-//     passport.authenticate("google", {
-//       scope: ["profile", "email"],
-//       state: redirect as string,
-//     })(req, res, next);
-//   },
-// );
 
-router.get("/google", async (req: Request, res: Response, next: NextFunction) => {
-    const redirect = req.query.redirect || "/"
-    passport.authenticate("google", { scope: ["profile", "email"], state: redirect as string })(req, res, next)
-})
+router.patch(
+  "/set-password",
+  checkAuth(...Object.values(Role)),
+  AuthControllers.setPassword,
+);
+
+router.get(
+  "/google",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const redirect = req.query.redirect || "/";
+    passport.authenticate("google", {
+      scope: ["profile", "email"],
+      state: redirect as string,
+    })(req, res, next);
+  },
+);
 
 router.get(
   "/google/callback",
-  passport.authenticate("google", { failureRedirect: "/login" }),
+  passport.authenticate("google", {
+    failureRedirect: `${envVars.FRONTEND_URL}/login?error=there is some issues in your account.Please contact with our support session`,
+  }),
   AuthControllers.googleCallback,
 );
 

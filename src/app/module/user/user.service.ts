@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import AppError from "../../errorHelper/AppError";
-import { IAuthProvider,  IUser, Role } from "./user.interface";
+import { IAuthProvider, IUser, Role } from "./user.interface";
 import { User } from "./user.model";
 import bcryptjs from "bcryptjs";
 import { envVars } from "../../config/env";
@@ -50,10 +50,7 @@ const updateUser = async (
       throw new AppError(StatusCodes.FORBIDDEN, "You are not authorized");
     }
 
-    if (
-      payload.role === Role.SUPER_ADMIN &&
-      decodedToken.role === Role.ADMIN
-    ) {
+    if (payload.role === Role.SUPER_ADMIN && decodedToken.role === Role.ADMIN) {
       throw new AppError(StatusCodes.FORBIDDEN, "You are not authorized");
     }
   }
@@ -67,7 +64,7 @@ const updateUser = async (
   if (payload.password) {
     payload.password = await bcryptjs.hash(
       payload.password,
-      envVars.BCRYPT_SALT_ROUND
+      envVars.BCRYPT_SALT_ROUND,
     );
   }
 
@@ -90,8 +87,25 @@ const getAllUsers = async () => {
   };
 };
 
+const getSingleUser = async (id: string) => {
+  const user = await User.findById(id).select("-password");
+  return {
+    data: user,
+  };
+};
+
+//me
+const getMe = async (userId: string) => {
+  const user = await User.findById(userId).select("-password");
+  return {
+    data: user,
+  };
+};
+
 export const UserServices = {
   createUser,
   getAllUsers,
-  updateUser
+  updateUser,
+  getMe,
+  getSingleUser
 };

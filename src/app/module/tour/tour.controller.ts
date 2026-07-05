@@ -2,9 +2,15 @@ import { Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { TourService } from "./tour.service";
 import { sendResponse } from "../../utils/sendResponse";
+import { ITour } from "./tour.interface";
 
 const creteTour = catchAsync(async (req: Request, res: Response) => {
-  const result = await TourService.createTour(req.body);
+  const payload: ITour = {
+    ...req.body,
+    images: (req.files as Express.Multer.File[]).map((file) => file.path),
+  };
+
+  const result = await TourService.createTour(payload);
   sendResponse(res, {
     statusCode: 201,
     success: true,
@@ -25,7 +31,13 @@ const getAllTours = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateTour = catchAsync(async (req: Request, res: Response) => {
-  const result = await TourService.updateTour(req.params.id, req.body);
+
+ const payload: ITour = {
+    ...req.body,
+    images: (req.files as Express.Multer.File[]).map((file) => file.path),
+  };
+
+  const result = await TourService.updateTour(req.params.id, payload);
 
   sendResponse(res, {
     statusCode: 201,
@@ -36,9 +48,9 @@ const updateTour = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteTour = catchAsync(async (req: Request, res: Response) => {
-     const { id } = req.params;
+  const { id } = req.params;
 
-     const result = await TourService.deleteTour(id);
+  const result = await TourService.deleteTour(id);
 
   sendResponse(res, {
     statusCode: 201,
@@ -72,9 +84,9 @@ const createTourType = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateTourType = catchAsync(async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const { name } = req.body;
-    const result = await TourService.updateTourType(id, name);
+  const { id } = req.params;
+  const { name } = req.body;
+  const result = await TourService.updateTourType(id, name);
 
   sendResponse(res, {
     statusCode: 200,
@@ -85,7 +97,7 @@ const updateTourType = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteTourTypes = catchAsync(async (req: Request, res: Response) => {
-     const { id } = req.params;
+  const { id } = req.params;
   const result = await TourService.deletedTourType(id);
 
   sendResponse(res, {
