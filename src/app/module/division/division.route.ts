@@ -1,3 +1,4 @@
+import { file } from 'zod';
 import { Router } from "express";
 import { checkAuth } from "../../middlewares/checkAuth";
 import { Role } from "../user/user.interface";
@@ -7,12 +8,14 @@ import {
   updateDivisionSchema,
 } from "./division.validation";
 import { DivisionController } from "./division.controller";
+import { multerUpload } from "../../config/multer.config";
 
 const router = Router();
 
 router.post(
   "/create",
   checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+  multerUpload.single("file"),
   validateRequest(createDivisionSchema),
   DivisionController.createDivision,
 );
@@ -21,8 +24,9 @@ router.get("/", DivisionController.getAllDivisions);
 router.get("/:slug", DivisionController.getSingleDivision);
 
 router.patch(
-  "/id",
+  "/:id",
   checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+  multerUpload.single("file"),
   validateRequest(updateDivisionSchema),
   DivisionController.updateDivision,
 );

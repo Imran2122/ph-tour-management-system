@@ -40,6 +40,10 @@ const isUserExist = await User.findOne({ email: verifiedToken.email });
     throw new AppError(StatusCodes.BAD_REQUEST, "user already isDeleted");
   }
 
+  if(!isUserExist.isVerified){
+    throw new AppError(StatusCodes.BAD_REQUEST, "user is not Verified");
+  }
+
 
 
       if (!authRoles.includes(verifiedToken.role)) {

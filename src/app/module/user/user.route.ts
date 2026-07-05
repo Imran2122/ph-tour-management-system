@@ -1,4 +1,3 @@
-
 import { Router } from "express";
 import { userController } from "./user.controller";
 
@@ -21,6 +20,16 @@ router.get(
   checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
   userController.getAllUsers,
 );
+
+// me
+router.get("/me", checkAuth(...Object.values(Role)), userController.getMe);
+
+router.get(
+  "/:id",
+  checkAuth(...Object.values(Role)),
+ userController.getSingleUser,
+);
+
 router.patch(
   "/:id",
   checkAuth(...Object.values(Role)),
